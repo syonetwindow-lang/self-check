@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///Users/syo/Downloads/self-diagnosis-2.html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自己理解プラン診断</title>
+<link href="./自己理解プラン診断_files/css2" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f0;
+    --surface: #ffffff;
+    --surface2: #f0f0eb;
+    --border: rgba(0,0,0,0.08);
+    --text: #1a1a2e;
+    --muted: #7a7a90;
+    --green: #2a9d5c;
+    --yellow: #d4890a;
+    --purple: #7c4dba;
+    --green-glow: rgba(42,157,92,0.1);
+    --yellow-glow: rgba(212,137,10,0.1);
+    --purple-glow: rgba(124,77,186,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(42,157,92,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 80%, rgba(124,77,186,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px;
+    padding: 24px 20px 48px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .header .compass {
+    font-size: 36px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .header p {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* Progress */
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s ease forwards;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--purple));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s ease forwards;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.3s ease forwards;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  }
+
+  .q-number {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .q-text {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 28px;
+  }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+  }
+
+  .option:hover {
+    border-color: rgba(0,0,0,0.18);
+    background: rgba(0,0,0,0.03);
+    transform: translateY(-1px);
+  }
+
+  .option.selected {
+    border-color: rgba(0,0,0,0.25);
+    background: rgba(0,0,0,0.03);
+  }
+
+  .option-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.25s;
+  }
+
+  .option.a-opt.selected .option-badge { background: var(--green-glow); border-color: var(--green); color: var(--green); }
+  .option.b-opt.selected .option-badge { background: var(--yellow-glow); border-color: var(--yellow); color: var(--yellow); }
+  .option.c-opt.selected .option-badge { background: var(--purple-glow); border-color: var(--purple); color: var(--purple); }
+
+  .option-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  /* Result */
+  .result-card {
+    display: none;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 36px 28px;
+    text-align: center;
+    opacity: 0;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  }
+
+  .result-card.show {
+    display: block;
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  .result-icon {
+    font-size: 48px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .result-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+
+  .result-badge.green { background: var(--green-glow); color: var(--green); border: 1px solid rgba(42,157,92,0.25); }
+  .result-badge.yellow { background: var(--yellow-glow); color: var(--yellow); border: 1px solid rgba(212,137,10,0.25); }
+  .result-badge.purple { background: var(--purple-glow); color: var(--purple); border: 1px solid rgba(124,77,186,0.25); }
+
+  .result-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+  }
+
+  .result-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.9;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .result-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+    justify-content: center;
+  }
+
+  .tag {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .score-bar {
+    margin-bottom: 24px;
+    text-align: left;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .score-label { width: 60px; color: var(--muted); }
+
+  .score-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .score-fill.green { background: var(--green); }
+  .score-fill.yellow { background: var(--yellow); }
+  .score-fill.purple { background: var(--purple); }
+
+  .score-num { width: 20px; text-align: right; color: var(--muted); }
+
+  /* Buttons */
+  .btn-next {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.05em;
+    margin-top: 24px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .btn-next.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .btn-next:hover {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.3);
+  }
+
+  .btn-retry {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-retry:hover {
+    border-color: rgba(0,0,0,0.2);
+    color: var(--text);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-out {
+    animation: slideOut 0.3s ease forwards;
+  }
+
+  @keyframes slideOut {
+    to { opacity: 0; transform: translateY(-12px); }
+  }
+
+  .slide-in {
+    animation: fadeUp 0.4s ease forwards;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <span class="compass">🧭</span>
+    <h1>自己理解プラン診断</h1>
+    <p>今の自分にいちばん近いものを1つ選択してください</p>
+  </div>
+
+  <div class="progress-label">
+    <span id="q-counter">Q1 / 5</span>
+    <span id="pct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <div id="quiz-area">
+    <div class="question-card" id="question-card">
+      <div class="q-number" id="q-num">QUESTION 01</div>
+      <div class="q-text" id="q-text">今いちばん整理したいテーマは？</div>
+      <div class="options" id="options"><button class="option a-opt"><span class="option-badge">A</span><span class="option-text">人生の流れや価値観</span></button><button class="option c-opt"><span class="option-badge">B</span><span class="option-text">自分の性格や特性</span></button><button class="option b-opt"><span class="option-badge">C</span><span class="option-text">仕事・キャリアの方向性</span></button></div>
+      <button class="btn-next" id="btn-next">次の質問へ →</button>
+    </div>
+  </div>
+
+  <div class="result-card" id="result-card">
+    <span class="result-icon" id="r-icon"></span>
+    <div class="result-badge" id="r-badge"></div>
+    <div class="result-title" id="r-title"></div>
+    <div class="result-desc" id="r-desc"></div>
+    <div class="score-bar">
+      <div class="score-row">
+        <span class="score-label">🟢 人生</span>
+        <div class="score-track"><div class="score-fill green" id="bar-a" style="width:0%"></div></div>
+        <span class="score-num" id="cnt-a">0</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">🟡 仕事</span>
+        <div class="score-track"><div class="score-fill yellow" id="bar-b" style="width:0%"></div></div>
+        <span class="score-num" id="cnt-b">0</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">🟣 個性</span>
+        <div class="score-track"><div class="score-fill purple" id="bar-c" style="width:0%"></div></div>
+        <span class="score-num" id="cnt-c">0</span>
+      </div>
+    </div>
+    <div class="result-tags" id="r-tags"></div>
+    <button class="btn-retry" onclick="restart()">もう一度診断する</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: '今いちばん整理したいテーマは？',
+    options: [
+      { label: 'A', text: '人生の流れや価値観', type: 'a' },
+      { label: 'B', text: '自分の性格や特性', type: 'c' },
+      { label: 'C', text: '仕事・キャリアの方向性', type: 'b' },
+    ]
+  },
+  {
+    text: '最近よく感じているモヤモヤは？',
+    options: [
+      { label: 'A', text: '仕事はしているけど、しっくりこない', type: 'b' },
+      { label: 'B', text: '自分の強みがわからない', type: 'c' },
+      { label: 'C', text: 'これまでの経験に意味を持たせたい', type: 'a' },
+    ]
+  },
+  {
+    text: 'セッションで一番やりたいことは？',
+    options: [
+      { label: 'A', text: '診断で自分を客観視する', type: 'c' },
+      { label: 'B', text: '印象に残った出来事を振り返る', type: 'a' },
+      { label: 'C', text: 'これまでの仕事を整理する', type: 'b' },
+    ]
+  },
+  {
+    text: '今ほしい"答え"に近いのは？',
+    options: [
+      { label: 'A', text: '私はどんなタイプの人間？', type: 'c' },
+      { label: 'B', text: '私は何を大切にして生きている？', type: 'a' },
+      { label: 'C', text: '私はどんな仕事を選べばいい？', type: 'b' },
+    ]
+  },
+  {
+    text: '直感でいちばん惹かれる言葉は？',
+    options: [
+      { label: 'A', text: '仕事の軸', type: 'b' },
+      { label: 'B', text: '個性', type: 'c' },
+      { label: 'C', text: '価値観', type: 'a' },
+    ]
+  },
+];
+
+const results = {
+  a: {
+    icon: '🌿',
+    badge: '人生の棚卸し',
+    badgeClass: 'green',
+    title: '🟢 人生の棚卸し',
+    desc: 'あなたは今、自分がこれまで歩んできた道のりに目を向けたいと感じています。過去の経験や出来事を丁寧に振り返ることで、自分が本当に大切にしている価値観や、人生の軸が見えてきます。まずは「自分史」を紐解くことから始めてみましょう。',
+    tags: ['自分史', '価値観', '人生の軸', '内省', 'ライフレビュー']
+  },
+  b: {
+    icon: '⚡',
+    badge: '仕事の棚卸し',
+    badgeClass: 'yellow',
+    title: '🟡 仕事の棚卸し',
+    desc: 'あなたは今、キャリアや働き方に対してモヤモヤを感じています。これまでの仕事経験を整理し、自分がどんな環境や役割でやりがいを感じてきたかを可視化することで、これからの仕事の選択基準が見えてきます。',
+    tags: ['キャリア', '仕事の軸', 'やりがい', '職務経歴', '方向性']
+  },
+  c: {
+    icon: '✨',
+    badge: '個性診断',
+    badgeClass: 'purple',
+    title: '🟣 個性診断',
+    desc: 'あなたは今、自分自身の特性や強みを客観的に把握したいと感じています。診断ツールや他者からのフィードバックを通じて、自分ならではの個性や才能を発見することで、自己理解が深まり、より自分らしい選択ができるようになります。',
+    tags: ['強み', '個性', '特性', '才能', '自己分析']
+  }
+};
+
+let current = 0;
+let answers = [];
+let selected = null;
+
+function render() {
+  const q = questions[current];
+  document.getElementById('q-num').textContent = `QUESTION ${String(current+1).padStart(2,'0')}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-counter').textContent = `Q${current+1} / 5`;
+  const pct = Math.round((current / 5) * 100);
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = `option ${opt.type}-opt`;
+    btn.innerHTML = `<span class="option-badge">${opt.label}</span><span class="option-text">${opt.text}</span>`;
+    btn.addEventListener('click', () => selectOption(opt.type, btn));
+    opts.appendChild(btn);
+  });
+
+  selected = null;
+  document.getElementById('btn-next').classList.remove('active');
+  document.getElementById('btn-next').textContent = current === 4 ? '結果を見る ✦' : '次の質問へ →';
+}
+
+function selectOption(type, btn) {
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  btn.classList.add('selected');
+  selected = type;
+  document.getElementById('btn-next').classList.add('active');
+}
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  if (!selected) return;
+  answers.push(selected);
+
+  if (current < 4) {
+    current++;
+    const card = document.getElementById('question-card');
+    card.classList.add('slide-out');
+    setTimeout(() => {
+      card.classList.remove('slide-out');
+      render();
+      card.classList.add('slide-in');
+      setTimeout(() => card.classList.remove('slide-in'), 400);
+    }, 300);
+  } else {
+    showResult();
+  }
+});
+
+function showResult() {
+  const counts = { a: 0, b: 0, c: 0 };
+  answers.forEach(a => counts[a]++);
+
+  const winner = Object.entries(counts).sort((x,y) => y[1]-x[1])[0][0];
+  const r = results[winner];
+
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('pct').textContent = '100%';
+  document.getElementById('q-counter').textContent = '完了';
+
+  document.getElementById('quiz-area').style.display = 'none';
+
+  const rc = document.getElementById('result-card');
+  rc.classList.add('show');
+  document.getElementById('r-icon').textContent = r.icon;
+  document.getElementById('r-badge').textContent = r.badge;
+  document.getElementById('r-badge').className = `result-badge ${r.badgeClass}`;
+  document.getElementById('r-title').textContent = r.title;
+  document.getElementById('r-desc').textContent = r.desc;
+
+  document.getElementById('cnt-a').textContent = counts.a;
+  document.getElementById('cnt-b').textContent = counts.b;
+  document.getElementById('cnt-c').textContent = counts.c;
+
+  setTimeout(() => {
+    document.getElementById('bar-a').style.width = (counts.a / 5 * 100) + '%';
+    document.getElementById('bar-b').style.width = (counts.b / 5 * 100) + '%';
+    document.getElementById('bar-c').style.width = (counts.c / 5 * 100) + '%';
+  }, 100);
+
+  const tagsEl = document.getElementById('r-tags');
+  tagsEl.innerHTML = '';
+  r.tags.forEach(t => {
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.textContent = '#' + t;
+    tagsEl.appendChild(span);
+  });
+}
+
+function restart() {
+  current = 0;
+  answers = [];
+  selected = null;
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-area').style.display = '';
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('pct').textContent = '0%';
+  render();
+  setTimeout(() => {
+    document.getElementById('result-card').style.display = '';
+  }, 100);
+}
+
+render();
+</script>
+
+
+</body></html>
